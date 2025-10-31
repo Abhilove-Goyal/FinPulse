@@ -16,7 +16,9 @@ from urllib.parse import quote
 from tqdm import tqdm
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
-
+import os, certifi
+os.environ["SSL_CERT_FILE"] = certifi.where()
+os.environ["REQUESTS_CA_BUNDLE"] = certifi.where()
 
 #fetch Stock data 
 def stock_data(ticker, period='4y', interval='1d', output_dir='.', write_csv=True):
@@ -86,7 +88,7 @@ def fetch_gdelt_news(query, start_date, end_date, max_records=100):
     }
 
     try:
-        response = requests.get(url, params=params, timeout=30)
+        response = requests.get(url, params=params, timeout=30,verify=False)
         response.raise_for_status()
         data = response.json()
         articles = data.get("articles", [])
@@ -551,4 +553,5 @@ def main_pipeline(ticker, period='4y', interval='1d',
 
 # Example usage:
 # main_pipeline('TSLA', period='4y', interval='1d')
+
 
