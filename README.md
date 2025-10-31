@@ -113,7 +113,6 @@ Distributed under the MIT License. See `LICENSE` for more information.
 - FinBERT by ProsusAI
 - Yahoo Finance API
 - Streamlit community
-- [Base paper authors—cite properly here]
 
 ---
 
