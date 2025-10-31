@@ -251,8 +251,6 @@ def merge_stock_with_sentiment(
     merged_df['sentiment_score'] = merged_df['sentiment_score'].fillna(method='ffill')
     # If still NaN at the start (no earlier news), set to 0
     merged_df['sentiment_score'] = merged_df['sentiment_score'].fillna(0.0)
-    #rolling logic 
-    merged_df['sentiment_rolling'] = merged_df['sentiment_score'].rolling(window=3, min_periods=1).mean()
 
     # Save to CSV
     merged_df.to_csv(output_csv_path, index=False)
@@ -557,6 +555,7 @@ def main_pipeline(ticker, period='4y', interval='1d',
 
 # Example usage:
 # main_pipeline('TSLA', period='4y', interval='1d')
+
 
 
 
