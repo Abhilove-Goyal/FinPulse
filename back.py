@@ -248,6 +248,8 @@ def merge_stock_with_sentiment(
     merged_df = pd.merge(stock_df, daily_sentiment, on='date', how='left')
 
     # Fill missing sentiment scores with 0 (neutral)
+    merged_df['sentiment_score'] = merged_df['sentiment_score'].fillna(method='ffill')
+    # If still NaN at the start (no earlier news), set to 0
     merged_df['sentiment_score'] = merged_df['sentiment_score'].fillna(0.0)
 
     # Save to CSV
@@ -553,5 +555,6 @@ def main_pipeline(ticker, period='4y', interval='1d',
 
 # Example usage:
 # main_pipeline('TSLA', period='4y', interval='1d')
+
 
 
