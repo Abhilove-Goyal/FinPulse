@@ -16,7 +16,6 @@ FinPulse is an advanced financial analysis platform that combines historical sto
 - [Installation](#installation)
 - [Usage](#usage)
 - [Results](#results)
-- [Screenshots](#screenshots)
 - [Contributing](#contributing)
 - [License](#license)
 
@@ -44,7 +43,7 @@ FinPulse is an advanced financial analysis platform that combines historical sto
 ---
 
 ## Demo
-
+![Dashboard](images/home.png)
 ![Demo Video]() <!-- Add dashboard or representative demo image/gif here -->
 
 ---
@@ -94,16 +93,6 @@ Below are major sample results from FinPulse’s predictive pipeline. Each image
 ![Prediction Result 2](images/SP_graph.png) <!-- Replace with your image filename -->
 ![Prediction Result 3](images/tsla_metrics.png) <!-- Replace with your image filename -->
 ![Prediction Result 4](images/tsla_metrics.png) <!-- Replace with your image filename -->
-
-<!-- Add captions or brief explanations under each image if desired -->
-
----
-
-## Screenshots
-
-![Dashboard](images/home.png)
-![Model Comparison](images/model_comparison.png)
-<!-- Add more screenshots related to different features of your app -->
 
 ---
 
