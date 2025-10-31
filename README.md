@@ -92,7 +92,7 @@ Below are major sample results from FinPulse’s predictive pipeline. Each image
 ![Prediction Result 1](images/SP_metrics.png) <!-- Replace with your image filename -->
 ![Prediction Result 2](images/SP_graph.png) <!-- Replace with your image filename -->
 ![Prediction Result 3](images/tsla_metrics.png) <!-- Replace with your image filename -->
-![Prediction Result 4](images/tsla_metrics.png) <!-- Replace with your image filename -->
+![Prediction Result 4](images/tsla_graph.png) <!-- Replace with your image filename -->
 
 ---
 
