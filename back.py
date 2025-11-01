@@ -158,34 +158,49 @@ def fetch_gdelt_news_batch(query, start_year, end_year, total_records=1257, prog
     return all_articles
 
 #predict sentiment and store using FinBERT
+from transformers import AutoTokenizer, AutoModelForSequenceClassification, pipeline
+import pandas as pd
+import os
+
 def predict_and_store_news_sentiment(
     news_csv_path,
     output_csv="news_with_sentiment.csv",
     model_name="ProsusAI/finbert"
 ):
-    """Loads news from CSV, runs FinBERT sentiment analysis, saves to new CSV."""
+    """
+    Loads news from CSV, runs FinBERT sentiment analysis on 'title' column,
+    and saves the result to a new CSV.
+    """
+
+    # Check CSV path
     if not news_csv_path or not os.path.exists(news_csv_path):
         raise FileNotFoundError(f"❌ CSV path not found or invalid: {news_csv_path}")
-    
-    # Load FinBERT directly
-    sentiment_model = pipeline("sentiment-analysis", model=model_name, tokenizer=model_name)
-    
-    news_df = pd.read_csv(news_csv_path)
 
-    if 'content' not in news_df.columns:
-        raise ValueError("❌ CSV must contain a 'content' column for sentiment analysis.")
-    
-    news_df['sentiment_label'] = None
-    news_df['sentiment_score'] = None
+    # Read CSV
+    df = pd.read_csv(news_csv_path)
+    if "title" not in df.columns:
+        raise ValueError("❌ Input CSV must have a 'title' column.")
 
-    for i, text in enumerate(news_df['content']):
+    # Load pretrained FinBERT
+    tokenizer = AutoTokenizer.from_pretrained(model_name)
+    model = AutoModelForSequenceClassification.from_pretrained(model_name)
+    sentiment_model = pipeline("sentiment-analysis", model=model, tokenizer=tokenizer)
+
+    # Add sentiment columns
+    df["sentiment_label"] = None
+    df["sentiment_score"] = None
+
+    # Run FinBERT on each title
+    for i, text in enumerate(df["title"]):
         result = sentiment_model(str(text)[:512])[0]
-        news_df.at[i, 'sentiment_label'] = result['label']
-        news_df.at[i, 'sentiment_score'] = result['score']
+        df.at[i, "sentiment_label"] = result["label"]
+        df.at[i, "sentiment_score"] = result["score"]
 
-    news_df.to_csv(output_csv, index=False)
+    # Save output
+    df.to_csv(output_csv, index=False)
     print(f"✅ Sentiment data saved to: {output_csv}")
-    return news_df
+    return df
+
 
 
 
@@ -573,6 +588,7 @@ def main_pipeline(ticker, period='4y', interval='1d',
 
 # Example usage:
 # main_pipeline('TSLA', period='4y', interval='1d')
+
 
 
 
