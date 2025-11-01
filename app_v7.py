@@ -518,4 +518,4 @@ if page == "Stock Analysis":
 
 # Footer - show on all pages
 st.caption("Developed with FinPulse backend integration")
-
+st.stop()
