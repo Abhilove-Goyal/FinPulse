@@ -161,7 +161,7 @@ def fetch_gdelt_news_batch(query, start_year, end_year, total_records=1257, prog
 def predict_and_store_news_sentiment(
     news_csv_path,
     output_csv="news_with_sentiment.csv",
-    model_path="./finbert_local"
+    model_path=os.path.join(os.path.dirname(__file__), "finbert_local")
 ):
     """
     Loads news from CSV, runs FinBERT sentiment analysis, saves to new CSV.
@@ -555,6 +555,7 @@ def main_pipeline(ticker, period='4y', interval='1d',
 
 # Example usage:
 # main_pipeline('TSLA', period='4y', interval='1d')
+
 
 
 
