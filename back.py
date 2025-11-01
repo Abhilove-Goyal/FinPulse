@@ -59,11 +59,10 @@ def preprocess_stock_data(stock_csv_path):
 
 
 def load_sentiment_model():
-    model_path = os.path.join(os.path.dirname(__file__), "finbert_local")
     sentiment_model = pipeline(
-        "sentiment-analysis",
-        model=model_path,
-        tokenizer=model_path
+    "sentiment-analysis",
+    model="./finbert_local",
+    tokenizer="./finbert_local"
     )
     return sentiment_model
 
@@ -161,7 +160,7 @@ def fetch_gdelt_news_batch(query, start_year, end_year, total_records=1257, prog
 def predict_and_store_news_sentiment(
     news_csv_path,
     output_csv="news_with_sentiment.csv",
-    model_path=os.path.join(os.path.dirname(__file__), "finbert_local")
+    model_path="./finbert_local"
 ):
     """
     Loads news from CSV, runs FinBERT sentiment analysis, saves to new CSV.
@@ -486,20 +485,11 @@ def lstm_predict_stock_only(stock_csv, time_step=60, epochs=100, batch_size=32, 
     return _stock_fn(stock_csv, time_step=time_step, epochs=epochs, batch_size=batch_size, plot=plot)
 
 
-def main_pipeline(
-    ticker,
-    period='4y',
-    interval='1d',
-    news_query=None,
-    start_year=None,
-    end_year=None,
-    total_news_records=1200,
-    finbert_path=None,
-    progress_callback=None
-):
-    # Automatically detect the correct path for finbert_local
-    if finbert_path is None:
-        finbert_path = os.path.join(os.path.dirname(__file__), "finbert_local")
+def main_pipeline(ticker, period='4y', interval='1d',
+                  news_query=None, start_year=None, end_year=None,
+                  total_news_records=1200,
+                  finbert_path='./finbert_local',
+                  progress_callback=None):
         
     """Main pipeline for stock prediction with sentiment analysis"""
     def update_status(message):
@@ -565,6 +555,7 @@ def main_pipeline(
 
 # Example usage:
 # main_pipeline('TSLA', period='4y', interval='1d')
+
 
 
 
