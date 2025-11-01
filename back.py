@@ -559,6 +559,7 @@ def main_pipeline(ticker, period='4y', interval='1d',
     print(f"[DEBUG] news_csv: {news_csv}")
     print(f"[DEBUG] sentiment_csv: {sentiment_csv}")
     print(f"[DEBUG] finbert_path: {finbert_path}")
+    print(predict_and_store_news_sentiment.__code__.co_filename)
     predict_and_store_news_sentiment(news_csv_path=news_csv, output_csv=sentiment_csv, model_name="ProsusAI/finbert")
     update_status("💾 Sentiment analysis results saved")
 
@@ -588,6 +589,7 @@ def main_pipeline(ticker, period='4y', interval='1d',
 
 # Example usage:
 # main_pipeline('TSLA', period='4y', interval='1d')
+
 
 
 
