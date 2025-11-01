@@ -59,13 +59,13 @@ def preprocess_stock_data(stock_csv_path):
 
 
 def load_sentiment_model():
+    model_path = os.path.join(os.path.dirname(__file__), "finbert_local")
     sentiment_model = pipeline(
-    "sentiment-analysis",
-    model="./finbert_local",
-    tokenizer="./finbert_local"
+        "sentiment-analysis",
+        model=model_path,
+        tokenizer=model_path
     )
     return sentiment_model
-
 
 
 def fetch_gdelt_news(query, start_date, end_date, max_records=100):
@@ -555,6 +555,7 @@ def main_pipeline(ticker, period='4y', interval='1d',
 
 # Example usage:
 # main_pipeline('TSLA', period='4y', interval='1d')
+
 
 
 
