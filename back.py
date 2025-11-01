@@ -58,11 +58,12 @@ def preprocess_stock_data(stock_csv_path):
     return df
 
 
-def load_sentiment_model():
+def load_sentiment_model(model_name="ProsusAI/finbert"):
+    print(f"🔹 Loading model: {model_name}")
     sentiment_model = pipeline(
         "sentiment-analysis",
-        model="ProsusAI/finbert",
-        tokenizer="ProsusAI/finbert"
+        model=model_name,
+        tokenizer=model_name
     )
     return sentiment_model
 
@@ -160,22 +161,32 @@ def fetch_gdelt_news_batch(query, start_year, end_year, total_records=1257, prog
 def predict_and_store_news_sentiment(
     news_csv_path,
     output_csv="news_with_sentiment.csv",
-    model_path="ProsusAI/finbert"
+    model_name="ProsusAI/finbert"
 ):
     """Loads news from CSV, runs FinBERT sentiment analysis, saves to new CSV."""
-    sentiment_model = pipeline("sentiment-analysis", model=model_path, tokenizer=model_path)
+    if not news_csv_path or not os.path.exists(news_csv_path):
+        raise FileNotFoundError(f"❌ CSV path not found or invalid: {news_csv_path}")
+    
+    # Load FinBERT directly
+    sentiment_model = pipeline("sentiment-analysis", model=model_name, tokenizer=model_name)
     
     news_df = pd.read_csv(news_csv_path)
-    
+
     if 'content' not in news_df.columns:
-        raise ValueError("CSV must contain a 'content' column for sentiment analysis.")
+        raise ValueError("❌ CSV must contain a 'content' column for sentiment analysis.")
     
-    sentiments = [sentiment_model(text[:512])[0] for text in news_df['content']]
-    news_df['sentiment_label'] = [s['label'] for s in sentiments]
-    news_df['sentiment_score'] = [s['score'] for s in sentiments]
-    
+    news_df['sentiment_label'] = None
+    news_df['sentiment_score'] = None
+
+    for i, text in enumerate(news_df['content']):
+        result = sentiment_model(str(text)[:512])[0]
+        news_df.at[i, 'sentiment_label'] = result['label']
+        news_df.at[i, 'sentiment_score'] = result['score']
+
     news_df.to_csv(output_csv, index=False)
+    print(f"✅ Sentiment data saved to: {output_csv}")
     return news_df
+
 
 
     def get_sentiment(text):
@@ -530,7 +541,7 @@ def main_pipeline(ticker, period='4y', interval='1d',
     # 4. Run sentiment analysis and save
     update_status("🤖 Running sentiment analysis on news articles...")
     sentiment_csv = f'{ticker}_news_with_sentiment.csv'
-    predict_and_store_news_sentiment(news_csv, output_csv=sentiment_csv, model_path=finbert_path)
+    predict_and_store_news_sentiment(news_csv_path=news_csv, output_csv=sentiment_csv, model_name="ProsusAI/finbert")
     update_status("💾 Sentiment analysis results saved")
 
     # 5. Merge stock and sentiment data
@@ -559,6 +570,7 @@ def main_pipeline(ticker, period='4y', interval='1d',
 
 # Example usage:
 # main_pipeline('TSLA', period='4y', interval='1d')
+
 
 
 
