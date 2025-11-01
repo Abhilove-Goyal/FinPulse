@@ -59,16 +59,12 @@ def preprocess_stock_data(stock_csv_path):
 
 
 def load_sentiment_model():
-    base_dir = os.path.dirname(os.path.abspath(__file__))
-    finbert_dir = os.path.join(base_dir, "finbert_local")
-
     sentiment_model = pipeline(
         "sentiment-analysis",
-        model=finbert_dir,
-        tokenizer=finbert_dir
+        model="ProsusAI/finbert",
+        tokenizer="ProsusAI/finbert"
     )
     return sentiment_model
-
 
 
 def fetch_gdelt_news(query, start_date, end_date, max_records=100):
@@ -164,23 +160,23 @@ def fetch_gdelt_news_batch(query, start_year, end_year, total_records=1257, prog
 def predict_and_store_news_sentiment(
     news_csv_path,
     output_csv="news_with_sentiment.csv",
-    model_path=None
+    model_path="ProsusAI/finbert"
 ):
-    base_dir = os.path.dirname(os.path.abspath(__file__))
-    if model_path is None:
-        model_path = os.path.join(base_dir, "finbert_local")
-    """
-    Loads news from CSV, runs FinBERT sentiment analysis, saves to new CSV.
-    Returns the DataFrame with sentiment columns.
-    """
-    # Load news data
-    df = pd.read_csv(news_csv_path)
-    if "title" not in df.columns:
-        raise ValueError("Input CSV must have a 'title' column.")
+    """Loads news from CSV, runs FinBERT sentiment analysis, saves to new CSV."""
+    sentiment_model = pipeline("sentiment-analysis", model=model_path, tokenizer=model_path)
+    
+    news_df = pd.read_csv(news_csv_path)
+    
+    if 'content' not in news_df.columns:
+        raise ValueError("CSV must contain a 'content' column for sentiment analysis.")
+    
+    sentiments = [sentiment_model(text[:512])[0] for text in news_df['content']]
+    news_df['sentiment_label'] = [s['label'] for s in sentiments]
+    news_df['sentiment_score'] = [s['score'] for s in sentiments]
+    
+    news_df.to_csv(output_csv, index=False)
+    return news_df
 
-    # Load FinBERT model and tokenizer
-    tokenizer = AutoTokenizer.from_pretrained(model_path)
-    model = AutoModelForSequenceClassification.from_pretrained(model_path)
 
     def get_sentiment(text):
         try:
@@ -492,16 +488,18 @@ def lstm_predict_stock_only(stock_csv, time_step=60, epochs=100, batch_size=32, 
     return _stock_fn(stock_csv, time_step=time_step, epochs=epochs, batch_size=batch_size, plot=plot)
 
 
-def main_pipeline(..., finbert_path=None, ...):
-    base_dir = os.path.dirname(os.path.abspath(__file__))
-    if finbert_path is None:
-        finbert_path = os.path.join(base_dir, "finbert_local")
-        
+def main_pipeline(ticker, period='4y', interval='1d',
+                  news_query=None, start_year=None, end_year=None,
+                  total_news_records=1200,
+                  finbert_path="ProsusAI/finbert",
+                  progress_callback=None):
     """Main pipeline for stock prediction with sentiment analysis"""
+    
     def update_status(message):
         if progress_callback:
             progress_callback(message)
         print(message)
+    update_status("🔄 Starting prediction pipeline...")
 
     # 1. Fetch and preprocess stock data
     update_status("📈 Fetching stock data...")
@@ -561,6 +559,7 @@ def main_pipeline(..., finbert_path=None, ...):
 
 # Example usage:
 # main_pipeline('TSLA', period='4y', interval='1d')
+
 
 
 
